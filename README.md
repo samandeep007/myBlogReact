@@ -53,7 +53,7 @@ The `AuthService` class also creates an instance of itself called `authService` 
 
 Note: The code assumes that the `conf` object contains the necessary configuration values for the appwrite service, such as the URL and project ID.
 
-```
+```javascript
 import conf from "../conf/conf.js";
 import { Client, Account, ID } from "appwrite";
 
