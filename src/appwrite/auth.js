@@ -53,6 +53,7 @@ export class AuthService {
     return null; // If the user is not found
   }
 
+  //Logout the user
   async logout() {
     try {
       await this.account.deleteSessions(); // Delete the current session

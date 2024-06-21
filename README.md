@@ -114,3 +114,186 @@ export default authService;
 
 
 ```
+# Service Class
+
+The `Service` class is responsible for handling database and storage operations using the Appwrite backend-as-a-service platform. It provides methods for creating, updating, deleting, and reading posts, as well as uploading and deleting files.
+
+## Constructor
+
+The constructor initializes the `Client` instance and sets the endpoint and project ID using the `conf` object. It also initializes the `Databases` and `Storage` services.
+
+```javascript
+constructor() {
+    this.client = new Client();
+    this.client
+        .setEndpoint(conf.appwriteUrl)
+        .setProject(conf.appwriteProjectId);
+
+    this.databases = new Databases(this.client);
+    this.bucket = new Storage(this.client);
+}
+```
+
+## createPost Method
+
+The `createPost` method creates a new post document in the specified database collection. It takes an object containing the post details as its parameter and returns the created document.
+
+```javascript
+async createPost({ title, slug, content, featuredImage, status, userId }) {
+    try {
+        return await this.databases.createDocument(
+            conf.appwriteDatabaseId,
+            conf.appwriteCollectionId,
+            slug,
+            {
+                title,
+                slug,
+                content,
+                featuredImage,
+                status,
+                userId,
+            }
+        );
+    } catch (error) {
+        console.log("Service :: createPost :: error ", error);
+    }
+}
+```
+
+## updatePost Method
+
+The `updatePost` method updates an existing post document in the specified database collection. It takes an object containing the updated post details as its parameter and returns the updated document.
+
+```javascript
+async updatePost({ title, slug, content, featuredImage, status, userId }) {
+    try {
+        return await this.databases.updateDocument(
+            conf.appwriteDatabaseId,
+            conf.appwriteCollectionId,
+            slug,
+            {
+                title,
+                slug,
+                content,
+                featuredImage,
+                status,
+                userId,
+            }
+        );
+    } catch (error) {
+        console.log("Service :: updatePost :: error ", error);
+    }
+}
+```
+
+## deletePost Method
+
+The `deletePost` method deletes a post document from the specified database collection. It takes the slug of the post as its parameter and returns `true` if the deletion is successful, otherwise `false`.
+
+```javascript
+async deletePost(slug) {
+    try {
+        await this.databases.deleteDocument(
+            conf.appwriteDatabaseId,
+            conf.appwriteCollectionId,
+            slug
+        );
+        return true;
+    } catch (error) {
+        console.log("Service :: deletePost :: error ", error);
+        return false;
+    }
+}
+```
+
+## readPost Method
+
+The `readPost` method retrieves a post document from the specified database collection. It takes the slug of the post as its parameter and returns the retrieved document.
+
+```javascript
+async readPost(slug) {
+    try {
+        return await this.databases.getDocument(
+            conf.appwriteDatabaseId,
+            conf.appwriteCollectionId,
+            slug
+        );
+    } catch (error) {
+        console.log("Service :: readPost :: error ", error);
+    }
+}
+```
+
+## getPosts Method
+
+The `getPosts` method retrieves a list of post documents from the specified database collection based on the provided queries. It takes an optional array of queries as its parameter and returns the list of documents.
+
+```javascript
+async getPosts(queries = [Query.equal("status", "active")]) {
+    try {
+        return await this.databases.listDocuments(
+            conf.appwriteDatabaseId,
+            conf.appwriteCollectionId,
+            queries
+        );
+    } catch (error) {
+        console.log("Service :: getAllPosts :: error ", error);
+    }
+}
+```
+
+## fileUpload Method
+
+The `fileUpload` method uploads a file to the specified storage bucket. It takes the file object as its parameter and returns `true` if the upload is successful, otherwise `false`.
+
+```javascript
+async fileUpload(file) {
+    try {
+        await this.bucket.createFile(conf.appwriteBucketId, ID.unique(), file);
+        return true;
+    } catch (error) {
+        console.log("Service :: fileUpload :: error ", error);
+        return false;
+    }
+}
+```
+
+## deleteFile Method
+
+The `deleteFile` method deletes a file from the specified storage bucket. It takes the file ID as its parameter and returns `true` if the deletion is successful, otherwise `false`.
+
+```javascript
+async deleteFile(fileId) {
+    try {
+        await this.bucket.deleteFile(conf.appwriteBucketId, fileId);
+        return true;
+    } catch (error) {
+        console.log("Service :: deleteFile :: error ", error);
+        return false;
+    }
+}
+```
+
+## getFilePreview Method
+
+The `getFilePreview` method retrieves the preview of a file from the specified storage bucket. It takes the file ID as its parameter and returns the file preview.
+
+```javascript
+async getFilePreview(fileId) {
+    try {
+        return this.bucket.getFilePreview(conf.appwriteBucketId, fileId);
+    } catch (error) {
+        console.log("Service :: getFilePreview :: error ", error);
+    }
+}
+```
+
+## Usage
+
+To use the `Service` class, create an instance of it and export it as the default export.
+
+```javascript
+const service = new Service();
+export default service;
+```
+
