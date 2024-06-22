@@ -23,11 +23,10 @@ export class Service {
         slug,
         {
           title,
-          slug,
           content,
           featuredImage,
           status,
-          userId,
+          userId
         }
 
         //Databases.createDocument([Database ID], [Collection ID], [Data], [Read Permissions], [Write Permissions])
@@ -37,7 +36,7 @@ export class Service {
     }
   }
 
-  async updatePost({ title, slug, content, featuredImage, status, userId }) {
+  async updatePost(slug, { title, content, featuredImage, status}) {
     try {
       return this.databases.updateDocument(
         conf.appwriteDatabaseId,
@@ -45,11 +44,9 @@ export class Service {
         slug,
         {
           title,
-          slug,
           content,
           featuredImage,
-          status,
-          userId,
+          status
         }
 
         //Databases.updateDocument([Database ID], [Collection ID], [Document ID], [Data], [Read Permissions], [Write Permissions])
@@ -107,10 +104,10 @@ export class Service {
   }
 
   //file Upload service
-  async fileUpload(file) {
+  async uploadFile(file) {
     try {
-      await this.bucket.createFile(conf.appwriteBucketId, ID.unique(), file);
-      return true;
+      return await this.bucket.createFile(conf.appwriteBucketId, ID.unique(), file);
+      
     } catch (error) {
       console.log("Service :: fileUpload :: error ", error);
       return false;
@@ -129,12 +126,13 @@ export class Service {
     }
   }
 
-  async getFilePreview(fileId){
+  getFilePreview(fileId){
     try {
-        return this.bucket.getFilePreview(
+        const file =  this.bucket.getFilePreview(
             conf.appwriteBucketId,
             fileId
         )
+        return file;
     } catch (error) {
         console.log("Service :: getFilePreview :: error ", error)
     }

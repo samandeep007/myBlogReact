@@ -14,7 +14,8 @@ function RTE({ name, control, label, defaultValue = "" }) {
         render={({field: {onChange}}) => { 
             return (
                 <Editor
-                initialValue="default value" //
+                apiKey="e7zu57eaieefb9wd3ptcy721lnp1uijv2n2autll0olx8bw5"
+                initialValue={defaultValue}//
                 init={
                   //init is an object that contains the configuration options for the editor. it accepts an object with the configuration options for the editor
                   {

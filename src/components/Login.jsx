@@ -19,7 +19,7 @@ function Login() {
       if (session) {
         const userData = await authService.getCurrentUser(); // get current user data; --> await is used to wait for the promise to resolve
         if (userData) {
-          dispatch(authLogin(userData)); // dispatch login action
+          dispatch(authLogin({...userData})); // dispatch login action
           navigate("/"); // redirect to home page
         }
       }

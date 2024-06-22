@@ -2,10 +2,13 @@ import React, { useCallback, useEffect } from "react";
 import { Input, Select, Button, RTE } from "../index.js";
 import appwriteService from "../../appwrite/config.js"; //service contains createPost and updatePost methods
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
+
 export default function PostForm({ post }) {
+
+  const {slug} = post ? useParams() : ""
   const { handleSubmit, register, watch, setValue, control, getValues } =
     useForm({
       defaultValues: {
@@ -15,42 +18,39 @@ export default function PostForm({ post }) {
         status: post?.status || "active",
       },
     }); //watch is a function that watches the value of the input field
-
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth.userData); //useSelector accepts a function that takes the state as an argument and returns the part of the state that you want to access
+  // console.log(userData.$id) --> for testing purposes
+  console.log(post?.slug);
 
   const submit = async (data) => {
     if (post) {
       const file = data.image[0]
-        ? appwriteService.fileUpload(data.image[0])
+        ? await appwriteService.uploadFile(data.image[0])
         : null; //Always do the file upload first
       if (file) {
-        appwriteService.deleteFile(post.featuredImage);
+        await appwriteService.deleteFile(post.featuredImage);
       }
 
-      const dbPost = await appwriteService.updatePost(post.$id, {
+      const dbPost = await appwriteService.updatePost(slug, {
         ...data,
         featuredImage: file ? file.$id : undefined,
+        slug: slug,
       });
 
       if (dbPost) {
-        navigate(`/posts/${dbPost.$id}`); //navigate to the posts page
+        navigate(`/post/${dbPost.$id}`); //navigate to the posts page
       }
     } else {
-      const file = data.image[0]
-        ? appwriteService.fileUpload(data.image[0])
-        : null;
+      const file = await appwriteService.uploadFile(data.image[0]);
 
       if (file) {
         const fileId = file.$id;
-        data.featuredImage = fileId;
-
-        const dbPost = await appwriteService.createPost({
-          ...data,
-          userId: userData.$id,
-        }); //appwriteService.createPost(data, id) is a function that creates a post in the database
+                data.featuredImage = fileId;
+      
+                const dbPost = await appwriteService.createPost({ ...data, userId: userData.$id }); //appwriteService.createPost(data, id) is a function that creates a post in the database
         if (dbPost) {
-          navigate(`/posts/${dbPost.$id}`);
+          navigate(`/post/${dbPost.$id}`);
         }
       }
     }
@@ -58,7 +58,7 @@ export default function PostForm({ post }) {
 
   const slugTransform = useCallback((value)=>{
     if(value && typeof value === 'string'){
-      return value.trim().toLowerCase().replace(/^[a-zA-z\d\s]+/g, '-').replace(/\s/g, '-'); //replace all spaces with a hyphen
+      return value.trim().toLowerCase().replace(/[^a-zA-z\d\s]+/g, '-').replace(/\s/g, '-'); //replace all spaces with a hyphen
     }
     return '';
   }, [])
@@ -87,6 +87,7 @@ export default function PostForm({ post }) {
           placeholder="Slug"
           className="mb-4"
           {...register("slug", { required: true })}
+          value={slug}
           onInput={(e) => {
               setValue("slug", slugTransform(e.currentTarget.value), { shouldValidate: true }); //it is setting the value of the slug field to the value of the title field and transforming it
           }}
