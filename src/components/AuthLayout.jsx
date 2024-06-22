@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 export default function Protected({children, authentication = true}) { //authentication = true means the page is protected --> we need protected pages for the user to be authenticated
     const navigate = useNavigate();
     const [loader, setLoader] = useState(true); //Setting up a loader state and updating it whenever the page is loading
-    const authStatus = useSelector(state => state.auth.isAuthenticated); //Getting the isAuthenticated value from the state
+    const authStatus = useSelector(state => state.auth.status); //Getting the isAuthenticated value from the state
 
     useEffect(()=>{ 
         //TODO: make it more easy --> check the alternate way to do this
