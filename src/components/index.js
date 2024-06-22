@@ -6,6 +6,11 @@ import LogoutBtn from './Header/LogoutBtn';
 import Select from './Select';
 import Input from './Input';
 import PostCard from './PostCard';
+import RTE from './RTE';
+import Signup from './SignUp';
+import Login from './Login';
+import PostForm from './PostForm/PostForm';
+import PostCard from './PostCard';
 
 
-export {Header, Footer, Container, Logo, LogoutBtn, Select, Input, PostCard};
+export {Header, Footer, Container, Logo, LogoutBtn, Select, Input, PostCard, RTE, Signup, Login, PostForm};
