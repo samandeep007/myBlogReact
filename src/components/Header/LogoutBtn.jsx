@@ -8,7 +8,7 @@ export default function LogoutBtn() {
     const dispatch = useDispatch();
     
     const logoutHandler = () => {
-        authService.logout().then(()=>{
+        authService.logout().then(()=>{ //authService.logout() is a promise here, so we can do chaining here
             dispatch(logout())
         })
     }
